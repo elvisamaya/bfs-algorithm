@@ -87,12 +87,53 @@ def find_neighbors(maze, row, col):
 
     return neighbors
 
+def dfs(maze, stdscr):
+    start = "O"
+    end = "X"
+    start_pos = find_start(maze, start)
+
+    stack = [(start_pos, [start_pos])]
+    visited = set()
+
+    while stack:
+        current_pos, path = stack.pop()
+        row, col = current_pos
+
+        stdscr.clear()
+        print_maze(maze, stdscr, path)
+        time.sleep(0.2)
+        stdscr.refresh()
+
+        if maze[row][col] == end:
+            return path
+
+        neighbors = find_neighbors(maze, row, col)
+        for neighbor in neighbors:
+            if neighbor in visited:
+                continue
+            r, c = neighbor
+            if maze[r][c] == "#":
+                continue
+
+            new_path = path + [neighbor]
+            stack.append((neighbor, new_path))
+            visited.add(neighbor)
 
 def main(stdscr):
     curses.init_pair(1, curses.COLOR_BLUE, curses.COLOR_BLACK)
     curses.init_pair(2, curses.COLOR_RED, curses.COLOR_BLACK)
 
-    find_path(maze, stdscr)
+    stdscr.addstr(0, 0, "Choose Algorithm: (b) BFS or (d) DFS")
+    key = stdscr.getch()
+
+    if key == ord('b'):
+        find_path(maze, stdscr)   # BFS
+    elif key == ord('d'):
+        dfs(maze, stdscr)         # DFS
+    else:
+        stdscr.addstr(2, 0, "Invalid choice. Press any key to exit.")
+        stdscr.getch()
+
     stdscr.getch()
 
 
